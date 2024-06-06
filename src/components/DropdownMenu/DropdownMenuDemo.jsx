@@ -31,15 +31,18 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useContext } from "react"
+import { AuthContext } from "../Provider/AuthProvider"
 
 
 export function DropdownMenuDemo() {
+    const { user, logout } = useContext(AuthContext)
     return (
         <DropdownMenu variant="ghost">
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost">
                     <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" />
+                        <AvatarImage src={user?.photoURL} />
                         <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
                 </Button>
@@ -118,7 +121,7 @@ export function DropdownMenuDemo() {
                     <span>API</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={logout} >
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                     <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>

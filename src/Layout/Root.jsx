@@ -11,10 +11,8 @@ const Root = () => {
 
     return (
         <>
-            <StickyNavbar></StickyNavbar>
-            <div className="min-h-[calc(100vh-280px)]">
+
                 <Outlet></Outlet>
-            </div>
 
         </>
     );
