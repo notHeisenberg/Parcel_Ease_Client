@@ -5,6 +5,8 @@ import Home from "@/Pages/Home/Home";
 import Dashboard from "@/Pages/Dashboard/Dashboard";
 import Login from "@/Pages/Login/Login";
 import SignUp from "@/Pages/SignUp/SignUp";
+import UserHome from "@/Pages/Dashboard/UserHome/UserHome";
+import PrivateRoute from "./PrivateRoute";
 
 
 const router = createBrowserRouter([
@@ -12,27 +14,33 @@ const router = createBrowserRouter([
         path: "/",
         element: <Root></Root>,
         errorElement: <ErrorPage></ErrorPage>,
-        children:[
+        children: [
             {
-                path:"/",
-                element:<Home></Home>
+                path: "/",
+                element: <Home></Home>
             },
             {
-                path:"dashboard",
-                element:<Dashboard></Dashboard>
+                path: "login",
+                element: <Login></Login>
             },
             {
-                path:"login",
-                element:<Login></Login>
+                path: "signup",
+                element: <SignUp></SignUp>
             },
             {
-                path:"signup",
-                element:<SignUp></SignUp>
-            }
+                path: "dashboard",
+                element: <PrivateRoute><Dashboard></Dashboard></PrivateRoute>,
+                children: [
+                    {
+                        path: 'userhome',
+                        element: <UserHome></UserHome>
+                    }
+                ]
+            },
         ]
 
 
-        
+
     },
 ]);
 

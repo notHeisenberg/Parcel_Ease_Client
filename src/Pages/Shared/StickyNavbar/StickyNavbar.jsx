@@ -100,22 +100,26 @@ export function StickyNavbar() {
                     Parcel Ease
                 </Typography>
                 <div className="hidden lg:block">{navList}</div>
-                <div className="flex items-center gap-x-1">
-                    <Link to={"/login"}>
-                        <Button variant="text" size="sm" className="hidden lg:inline-block">
-                            <span>Log In</span>
-                        </Button></Link>
-                    <Link to={"/signUp"}>
-                        <Button
-                            variant="gradient"
-                            size="sm"
-                            className="hidden lg:inline-block"
-                        >
-                            <span>Sign Up</span>
-                        </Button>
-                    </Link>
+                {
+                    user ? <></>
+                        :
+                        <div className="flex items-center gap-x-1">
+                            <Link to={"/login"}>
+                                <Button variant="text" size="sm" className="hidden lg:inline-block">
+                                    <span>Log In</span>
+                                </Button></Link>
+                            <Link to={"/signUp"}>
+                                <Button
+                                    variant="gradient"
+                                    size="sm"
+                                    className="hidden lg:inline-block"
+                                >
+                                    <span>Sign Up</span>
+                                </Button>
+                            </Link>
 
-                </div>
+                        </div>
+                }
                 <IconButton
                     variant="text"
                     className="ml-auto h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"

@@ -41,44 +41,48 @@ const AuthProvider = ({ children }) => {
         return signInWithEmailAndPassword(auth, email, password)
     }
 
-    const logout = async () => {
-        setLoading(true)
-        return await signOut(auth).then(() => {
-            axiosPublic.post("/logout").then(() => {
-                setUser(null);
-                setLoading(false);
-            }).then(() => window.location.reload())
-        });
-    }
-
-
-    const handleToken = async (user) => {
+    const logout = () => {
         setLoading(true);
-        return await axiosPublic.post("/jwt", { email: user.email })
-            .then(response => {
-                console.log(response.data)
-                setUser(user);
-                setLoading(false);
-            })
-            .finally(() => setLoading(false))
+        return signOut(auth);
     }
+
+
+    // const handleToken = async (user) => {
+    //     setLoading(true);
+    //     return await axiosPublic.post("/jwt", { email: user.email })
+    //         .then(response => {
+    //             console.log(response.data)
+    //             setUser(user);
+    //             setLoading(false);
+    //         })
+    //         .finally(() => setLoading(false))
+    // }
 
     useEffect(() => {
-        const connection = onAuthStateChanged(auth, currentUser => {
-            console.log(currentUser);
+        const unsubscribe = onAuthStateChanged(auth, currentUser => {
+            setUser(currentUser);
+            // console.log(currentUser)
             if (currentUser) {
-                // Set the user only if a user is logged in
-                setUser(currentUser);
-                handleToken(currentUser)
-            } else {
-                // Otherwise, set user to null
-                setUser(null);
-                setLoading(false)
+                // get token and store client
+                const userInfo = { email: currentUser.email };
+                axiosPublic.post('/jwt', userInfo)
+                    .then(res => {
+                        if (res.data.token) {
+                            localStorage.setItem('access-token', res.data.token);
+                            setLoading(false);
+                        }
+                    })
             }
-            // setLoading(false)
-        })
-        return () => connection();
+            else {
+                // TODO: remove token (if token stored in the client side: Local storage, caching, in memory)
+                localStorage.removeItem('access-token');
+                setLoading(false);
+            }
 
+        });
+        return () => {
+            return unsubscribe();
+        }
     }, [])
 
 

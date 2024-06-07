@@ -5,30 +5,43 @@ import {
     Typography,
 
 } from "@material-tailwind/react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
-import { FaGithub } from "react-icons/fa6";
 import { updateProfile } from "firebase/auth";
 import { Link } from "react-router-dom";
 import { AuthContext } from "@/components/Provider/AuthProvider";
+import { SelectDemo } from "@/components/Select/SelectDemo";
+
+import axiosPublic from "@/utilities/useAxiosPublic";
+import Swal from "sweetalert2";
+import { LoadCanvasTemplate, loadCaptchaEnginge, validateCaptcha } from "react-simple-captcha";
+
+
+
 
 
 
 const SignUp = () => {
+    const [disabled, setDisabled] = useState(true);
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [photoURL, setPhotoURL] = useState("");
+    const [selectedRole, setSelectedRole] = useState('');
     const [showPassword, setShowPassword] = useState(false)
-    // const [response, setResponse] = useState(null);
+
 
     const { signUp } = useContext(AuthContext)
 
+
+    useEffect(() => {
+        loadCaptchaEnginge(6);
+    }, [])
+
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log(name, email, password, photoURL);
 
         if (!email.includes("@gmail.com")) {
             toast.error("Please provide a valid email...  ex: example@gmail.com")
@@ -44,9 +57,31 @@ const SignUp = () => {
         }
 
         signUp(email, password)
-            .then(result => {
+            .then((result) => {
 
-                console.log(result.user)
+                const userInfo = {
+                    email: result.user.email,
+                    userName: name,
+                    photoURL: photoURL,
+                    role: selectedRole,
+                    createdAt: result.user.metadata.createdAt,
+                    lastLoginAt: result.user.metadata.lastLoginAt
+                }
+                // console.log(userInfo)
+                axiosPublic.post('/users', userInfo)
+                    .then(res => {
+                        console.log(res.data);
+                        if (res.data.insertedId) {
+                            Swal.fire({
+                                position: 'top',
+                                icon: 'success',
+                                title: 'User created successfully.',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
+                    })
+
                 toast.success(
                     <>
                         Account created succesfully
@@ -78,9 +113,19 @@ const SignUp = () => {
 
         setName("")
         setEmail("")
-        setPassword("")
+        // setPassword("")
         photoURL("")
 
+    };
+
+
+    const handleValidateCaptcha = (e) => {
+        const user_captcha_value = e.target.value;
+        if (validateCaptcha(user_captcha_value)) {
+            setDisabled(false);
+        } else {
+            setDisabled(true);
+        }
     };
 
     return (
@@ -163,9 +208,20 @@ const SignUp = () => {
                                     }
                                 </span>
                             </div>
+                            <SelectDemo
+                                setSelectedRole={setSelectedRole}
+                                required
+                            ></SelectDemo>
+                            <div className="form-control ">
+                                <label className="label ">
+                                    <LoadCanvasTemplate />
+                                </label>
+                                <input onBlur={handleValidateCaptcha} type="text" name="captcha" placeholder="type the captcha above" className="input input-bordered" />
+
+                            </div>
                         </div>
 
-                        <Button type="submit" className="mt-6 btn btn-primary" fullWidth>
+                        <Button disabled={disabled} type="submit" className="mt-6 btn btn-primary" fullWidth>
                             sign up
                         </Button>
 

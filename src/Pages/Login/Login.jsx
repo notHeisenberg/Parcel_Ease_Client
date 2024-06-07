@@ -5,7 +5,7 @@ import {
     Typography,
 
 } from "@material-tailwind/react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
@@ -13,10 +13,14 @@ import { FaGithub } from "react-icons/fa6";
 // import { AuthContext } from "../../Components/Provider/AuthProvider";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { AuthContext } from "@/components/Provider/AuthProvider";
+import useAxiosSecure from "@/utilities/useAxiosSecure";
+import { LoadCanvasTemplate, loadCaptchaEnginge, validateCaptcha } from "react-simple-captcha";
+import axiosPublic from "@/utilities/useAxiosPublic";
+import Swal from "sweetalert2";
 
 
 const Login = () => {
-
+    const [disabled, setDisabled] = useState(true);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false)
@@ -26,8 +30,9 @@ const Login = () => {
     // console.log(location.state)
     const navigate = useNavigate();
 
-
-
+    useEffect(() => {
+        loadCaptchaEnginge(6);
+    }, [])
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -48,28 +53,21 @@ const Login = () => {
 
 
         login(email, password)
-        //     .then(result => {
-        //         toast.success("login succesfully")
-        //         console.log(result.user)
-
-        //         const userInfo = {
-        //             email: result.user.email,
-        //             createdAt: result.user.metadata.createdAt,
-        //             lastLoginAt: result.user.metadata.lastLoginAt
-        //         }
-        //         fetch('https://art-craft-store-server-eta.vercel.app/users', {
-        //             method: 'POST',
-        //             headers: {
-        //                 'content-type': 'application/json'
-        //             },
-        //             body: JSON.stringify(userInfo)
-        //         })
-        //             .then(res => res.json())
-        //             .then(data => {
-        //                 console.log(data)
-        //             })
-
+            .then(result => {
+                toast.success("login succesfully")
+                console.log(result.user)
+                Swal.fire({
+                    title: 'User Login Successful.',
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                });
                 navigate(location?.state || '/');
+            })
+
         //     }
         //     )
         //     .catch(error => toast.error(error))
@@ -85,26 +83,29 @@ const Login = () => {
             .then(result => {
                 toast.success("Google login succesfully")
                 // console.log(result.user)
+                Swal.fire({
+                    title: 'User Login Successful.',
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                });
 
                 const userInfo = {
                     email: result.user.email,
+                    userName: result.user.displayName,
+                    photoURL: result.user.photoURL,
+                    role: result.user.role || 'user',
                     createdAt: result.user.metadata.createdAt,
                     lastLoginAt: result.user.metadata.lastLoginAt
                 }
-                // fetch('https://art-craft-store-server-eta.vercel.app/users', {
-                //     method: 'POST',
-                //     headers: {
-                //         'content-type': 'application/json'
-                //     },
-                //     body: JSON.stringify(userInfo)
-                // })
-                //     .then(res => res.json())
-                //     .then(data => {
-                //         // console.log(data)
-                //     })
-
-                // console.log(userInfo)
-                navigate(location?.state || '/')
+                axiosPublic.post('/users', userInfo)
+                    .then(res => {
+                        console.log(res.data)
+                        navigate(location?.state || '/')
+                    })
             })
             .catch(error => toast.error(error))
 
@@ -113,31 +114,44 @@ const Login = () => {
     const handleGithubLogin = () => {
         githubSignIn()
             .then(result => {
-                toast.success("Google login succesfully")
-                console.log(result.user)
+                toast.success("Github login succesfully")
+
+                Swal.fire({
+                    title: 'User Login Successful.',
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                });
 
                 const userInfo = {
                     email: result.user.email,
+                    userName: result.user.displayName,
+                    photoURL: result.user.photoURL,
+                    role: result.user.role || 'user',
                     createdAt: result.user.metadata.createdAt,
                     lastLoginAt: result.user.metadata.lastLoginAt
                 }
-                // fetch('https://art-craft-store-server-eta.vercel.app/users', {
-                //     method: 'POST',
-                //     headers: {
-                //         'content-type': 'application/json'
-                //     },
-                //     body: JSON.stringify(userInfo)
-                // })
-                //     .then(res => res.json())
-                //     .then(data => {
-                //         console.log(data)
-                //     })
-
-                navigate(location?.state || '/')
+                axiosPublic.post('/users', userInfo)
+                    .then(res => {
+                        console.log(res.data)
+                        navigate(location?.state || '/')
+                    })
             })
             .catch(error => toast.error(error))
 
     }
+
+    const handleValidateCaptcha = (e) => {
+        const user_captcha_value = e.target.value;
+        if (validateCaptcha(user_captcha_value)) {
+            setDisabled(false);
+        } else {
+            setDisabled(true);
+        }
+    };
 
     return (
         <>
@@ -193,9 +207,16 @@ const Login = () => {
                                     }
                                 </span>
                             </div>
+                            <div className="form-control">
+                                <label className="label">
+                                    <LoadCanvasTemplate />
+                                </label>
+                                <input onBlur={handleValidateCaptcha} type="text" name="captcha" placeholder="type the captcha above" className="input input-bordered" />
+
+                            </div>
                         </div>
 
-                        <Button type="submit" className="mt-6 btn btn-primary" fullWidth>
+                        <Button disabled={disabled} type="submit" className="mt-6 btn btn-primary" fullWidth>
                             Login
                         </Button>
                         <div className="flex justify-center items-center gap-3 mt-6" >
