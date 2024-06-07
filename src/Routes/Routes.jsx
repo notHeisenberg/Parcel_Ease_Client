@@ -7,6 +7,8 @@ import Login from "@/Pages/Login/Login";
 import SignUp from "@/Pages/SignUp/SignUp";
 import UserHome from "@/Pages/Dashboard/UserHome/UserHome";
 import PrivateRoute from "./PrivateRoute";
+import BookParcel from "@/Pages/Dashboard/BookParcel/BookParcel";
+import MyParcel from "@/Pages/Dashboard/MyParcel/MyParcel";
 
 
 const router = createBrowserRouter([
@@ -31,10 +33,20 @@ const router = createBrowserRouter([
                 path: "dashboard",
                 element: <PrivateRoute><Dashboard></Dashboard></PrivateRoute>,
                 children: [
+                    // normal user routes
                     {
                         path: 'userhome',
                         element: <UserHome></UserHome>
-                    }
+                    },
+                    {
+                        path: 'bookParcel',
+                        element: <BookParcel></BookParcel>
+                    },
+                    {
+                        path: 'myParcel',
+                        element: <MyParcel></MyParcel>
+                    },
+
                 ]
             },
         ]
