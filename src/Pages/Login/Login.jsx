@@ -67,10 +67,7 @@ const Login = () => {
                 });
                 navigate(location?.state || '/');
             })
-
-        //     }
-        //     )
-        //     .catch(error => toast.error(error))
+            .catch(error => toast.error(error))
 
 
         setEmail("")

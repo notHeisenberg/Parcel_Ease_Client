@@ -4,13 +4,6 @@ import { GithubAuthProvider, GoogleAuthProvider, createUserWithEmailAndPassword,
 import { auth } from "../../../firebase.config";
 import axiosPublic from "@/utilities/useAxiosPublic";
 
-
-// export const instance = axios.create({
-//     withCredentials: true,
-//     baseURL: "https://cuisine-quest-server.vercel.app"
-// })
-// instance.get('/todos')
-
 export const AuthContext = createContext(null)
 
 const AuthProvider = ({ children }) => {
@@ -45,18 +38,6 @@ const AuthProvider = ({ children }) => {
         setLoading(true);
         return signOut(auth);
     }
-
-
-    // const handleToken = async (user) => {
-    //     setLoading(true);
-    //     return await axiosPublic.post("/jwt", { email: user.email })
-    //         .then(response => {
-    //             console.log(response.data)
-    //             setUser(user);
-    //             setLoading(false);
-    //         })
-    //         .finally(() => setLoading(false))
-    // }
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, currentUser => {

@@ -9,6 +9,14 @@ import UserHome from "@/Pages/Dashboard/UserHome/UserHome";
 import PrivateRoute from "./PrivateRoute";
 import BookParcel from "@/Pages/Dashboard/BookParcel/BookParcel";
 import MyParcel from "@/Pages/Dashboard/MyParcel/MyParcel";
+import AllParcels from "@/Pages/Dashboard/AllParcels/AllParcels";
+import AllUsers from "@/Pages/Dashboard/AllUsers/AllUsers";
+import AllDeliveryman from "@/Pages/Dashboard/AllDeliveryman/AllDeliveryman";
+import AdminRoute from "./AdminRoute";
+import AdminHome from "@/Pages/Dashboard/AdminHome/AdminHome";
+import DeliverymanRoute from "./DeliverymanRoute";
+import MyDeliveryList from "@/Pages/Dashboard/MyDeliveryList/MyDeliveryList";
+import MyReviews from "@/Pages/Dashboard/MyReviews/MyReviews";
 
 
 const router = createBrowserRouter([
@@ -47,6 +55,34 @@ const router = createBrowserRouter([
                         element: <MyParcel></MyParcel>
                     },
 
+                    // deliveryman routes
+                    {
+                        path: 'myDeliveryList',
+                        element: <DeliverymanRoute><MyDeliveryList></MyDeliveryList></DeliverymanRoute>
+                    },
+                    {
+                        path: 'myReviews',
+                        element: <DeliverymanRoute><MyReviews></MyReviews></DeliverymanRoute>
+                    },
+
+
+                    // admin only routes
+                    {
+                        path: 'allParcels',
+                        element: <AdminRoute><AllParcels></AllParcels></AdminRoute>
+                    },
+                    {
+                        path: 'allUsers',
+                        element: <AdminRoute><AllUsers></AllUsers></AdminRoute>
+                    },
+                    {
+                        path: 'allDeliveryman',
+                        element: <AdminRoute><AllDeliveryman></AllDeliveryman></AdminRoute>
+                    },
+                    {
+                        path: 'statistics',
+                        element: <AdminRoute><AdminHome></AdminHome></AdminRoute>
+                    },
                 ]
             },
         ]

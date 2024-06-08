@@ -16,7 +16,7 @@ import {
   
   export function BreadcrumbDemo() {
     return (
-      <Breadcrumb>
+      <Breadcrumb className="text-white">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/">Home</BreadcrumbLink>

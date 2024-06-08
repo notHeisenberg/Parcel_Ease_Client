@@ -10,6 +10,8 @@ import { DropdownMenuDemo } from "@/components/DropdownMenu/DropdownMenuDemo";
 import websiteLogo from "../../../../src/assets/website-logo.png"
 import { Link, NavLink } from "react-router-dom";
 import { AuthContext } from "@/components/Provider/AuthProvider";
+import useDeliveryman from "@/hooks/useDeliveryman";
+import useAdmin from "@/hooks/useAdmin";
 
 export function StickyNavbar() {
     const [openNav, setOpenNav] = React.useState(false);
@@ -17,6 +19,9 @@ export function StickyNavbar() {
     const notActive = `flex items-center hover:text-blue-500 transition-colors text-md`
 
     const { user } = useContext(AuthContext)
+    const [isAdmin] = useAdmin()
+    const [isDeliveryman] = useDeliveryman()
+
 
     React.useEffect(() => {
         window.addEventListener(
@@ -26,7 +31,7 @@ export function StickyNavbar() {
     }, []);
 
     const navList = (
-        <ul className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
+        <ul className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6 text-black">
             <NavLink className={({ isActive }) =>
                 isActive
                     ? Active
@@ -59,7 +64,8 @@ export function StickyNavbar() {
                         isActive
                             ? Active
                             : notActive
-                    } to={"/dashboard"} >
+                    } to={`/dashboard/${isAdmin ? 'statistics' : isDeliveryman ? 'myDeliveryList' : 'userhome'}`} >
+
                         <Typography
                             as="li"
                             variant="small"
@@ -89,7 +95,7 @@ export function StickyNavbar() {
     );
 
     return (
-        <Navbar className="mx-auto  px-4 py-2 lg:px-8 lg:py-4">
+        <Navbar className="mx-auto  px-4 py-2 lg:px-8 lg:py-4 text-black">
             <div className="container mx-auto flex items-center justify-between text-blue-gray-900">
                 <Typography
                     as="a"
@@ -105,14 +111,14 @@ export function StickyNavbar() {
                         :
                         <div className="flex items-center gap-x-1">
                             <Link to={"/login"}>
-                                <Button variant="text" size="sm" className="hidden lg:inline-block">
+                                <Button variant="text" size="sm" className="hidden btn lg:inline-block">
                                     <span>Log In</span>
                                 </Button></Link>
                             <Link to={"/signUp"}>
                                 <Button
                                     variant="gradient"
                                     size="sm"
-                                    className="hidden lg:inline-block"
+                                    className="hidden btn lg:inline-block"
                                 >
                                     <span>Sign Up</span>
                                 </Button>
