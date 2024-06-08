@@ -29,6 +29,7 @@ const MyParcel = () => {
     const [filter, setFilter] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDialogOpen, setDialogOpen] = useState(false);
+    // const totalPrice = cart.reduce((total, item) => total + item.price, 0);
 
     const { register, handleSubmit, watch, setValue } = useForm()
 
@@ -139,19 +140,33 @@ const MyParcel = () => {
 
     const filteredBookings = filter ? bookings.filter(booking => booking.status === filter) : bookings;
 
+    const totalPricePending = bookings
+        .filter(booking => booking.status === 'pending')
+        .reduce((total, booking) => total + (booking.parcelPrice || 0), 0);
+
     return (
         <div className="container mx-auto p-8">
-            <h2 className="text3-xl">Total bookings: {bookings.length}</h2>
-            <div className="mb-4">
-                <label>Filter by status: </label>
-                <select onChange={(e) => setFilter(e.target.value)} className="border p-2">
-                    <option value=''>All</option>
-                    <option value='pending'>Pending</option>
-                    <option value='on the way'>On the Way</option>
-                    <option value='delivered'>Delivered</option>
-                    <option value='returned'>Returned</option>
-                    <option value='cancelled'>Cancelled</option>
-                </select>
+            <div className="flex justify-between">
+                <div>
+                    <h2 className="text3-xl">Total bookings: {bookings.length}</h2>
+                    <div className="mb-4">
+                        <label>Filter by status: </label>
+                        <select onChange={(e) => setFilter(e.target.value)} className="border p-2">
+                            <option value=''>All</option>
+                            <option value='pending'>Pending</option>
+                            <option value='on the way'>On the Way</option>
+                            <option value='delivered'>Delivered</option>
+                            <option value='returned'>Returned</option>
+                            <option value='cancelled'>Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+                {/*  */}
+                <div>
+                    <span className="text-3xl font-bold border-4 text-indigo-500 border-red-500 p-2 rounded-xl">
+                        Total Pending: $ {totalPricePending}
+                    </span>
+                </div>
             </div>
             <div className="overflow-x-auto">
                 <table className="table table-zebra">
@@ -198,14 +213,14 @@ const MyParcel = () => {
                                     </button>
                                     {booking.status === 'delivered' && (
                                         <button
-                                            onClick={() => handleReview(booking._id)}
+                                            onClick={() => handleReview(booking)}
                                             className="bg-green-500 text-white px-2 py-1 m-1 rounded"
                                         >
                                             Review
                                         </button>
                                     )}
                                     <button
-                                        onClick={() => handlePay(booking._id)}
+                                        onClick={() => handlePay(booking)}
                                         disabled={booking.status !== 'pending' || booking.status === 'cancelled'}
                                         className="bg-yellow-500 text-white px-2 py-1 m-1 rounded"
                                     >
