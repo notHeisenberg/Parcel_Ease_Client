@@ -113,7 +113,7 @@ const SignUp = () => {
 
         setName("")
         setEmail("")
-        // setPassword("")
+        setPassword("")
         photoURL("")
 
     };

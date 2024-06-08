@@ -1,11 +1,13 @@
 import { AuthContext } from "@/components/Provider/AuthProvider";
+import axiosPublic from "@/utilities/useAxiosPublic";
 import { useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import Swal from "sweetalert2";
 
 
 const BookParcel = () => {
 
-    const { register, handleSubmit, watch, setValue } = useForm();
+    const { register, handleSubmit, reset, watch, setValue } = useForm();
 
     const watchParcelWeight = watch('ParcelWeight', 0);
 
@@ -21,8 +23,39 @@ const BookParcel = () => {
         setValue('Price', calculatePrice(watchParcelWeight));
     }, [watchParcelWeight, setValue]);
 
+    // console.log(new Date().toUTCString())
     const onSubmit = data => {
         console.log(data)
+
+        const bookingInfo = {
+            displayName: data.Name,
+            email: data.Email,
+            userPhoneNumber: data.PhoneNumber,
+            recieverName: data.ReceiversName,
+            recieverPhoneNumber: data.ReceiversPhoneNumber,
+            parcelType: data.ParcelType,
+            parcelWeight: parseInt(data.ParcelWeight),
+            parcelPrice: data.Price,
+            deliveryAddressLatitude: data.DeliveryAddressLatitude,
+            deliveryAddressLongitude: data.DeliveryAddressLongitude,
+            parcelDeliveryAddress: data.ParcelDeliveryAddress,
+            requestedDeliveryDate: data.RequestedDeliveryDate,
+            bookingDate: new Date().toUTCString()
+        }
+
+        axiosPublic.post('/bookings', bookingInfo)
+            .then(res => {
+                if (res.data.insertedId) {
+                    reset()
+                    Swal.fire({
+                        position: 'top',
+                        icon: 'success',
+                        title: `Parcel booked succesfull`,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            })
 
     }
 

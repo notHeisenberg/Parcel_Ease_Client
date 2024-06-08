@@ -4,8 +4,10 @@ import useAdmin from "@/hooks/useAdmin";
 import useDeliveryman from "@/hooks/useDeliveryman";
 import { LogOut } from "lucide-react";
 import { useContext } from "react";
-import { FaChartArea, FaHouse, FaList, FaRegAddressCard } from "react-icons/fa6";
+import { FaChartArea, FaHouse, FaList, FaRegAddressCard, FaUser } from "react-icons/fa6";
 import { Link, NavLink, Outlet } from "react-router-dom";
+import { MdOutlineAddCard } from "react-icons/md";
+import { SiAzuredataexplorer } from "react-icons/si";
 
 const Dashboard = () => {
     const { logout } = useContext(AuthContext)
@@ -104,6 +106,7 @@ const Dashboard = () => {
                                 : notActive
                         }
                     >
+                        <FaUser></FaUser>
                         Dashboard
                     </NavLink>
                     <NavLink
@@ -114,6 +117,7 @@ const Dashboard = () => {
                                 : notActive
                         }
                     >
+                        <MdOutlineAddCard />
                         Book A Parcel
                     </NavLink>
                     <NavLink
@@ -124,6 +128,7 @@ const Dashboard = () => {
                                 : notActive
                         }
                     >
+                        <SiAzuredataexplorer />
                         My Parcel
                     </NavLink>
                 </>
@@ -131,19 +136,19 @@ const Dashboard = () => {
     </>
     return (
         <>
-            <div className="flex relative">
+            <div className="flex ">
                 <div className="flex flex-col justify-center items-center min-h-screen ">
                     <div className="drawer drawer-open ">
                         <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
                         <div className="drawer-content flex flex-col items-center justify-center">
-                            <label  htmlFor="my-drawer-2" className="btn btn-primary drawer-button md:hidden absolute top-0 z-10 ">Open drawer</label>
+                            <label htmlFor="my-drawer-2" className="btn btn-primary drawer-button md:hidden absolute top-0 z-10 ">Open drawer</label>
                             {/* Page content here */}
                             <div className="p-8">
                                 <Outlet></Outlet>
                             </div>
 
                         </div>
-                        <div className="drawer-side bg-slate-500 absolute left-0 ">
+                        <div className="drawer-side bg-slate-500 sm:absolute sm:left-0">
                             <label htmlFor="my-drawer-2" aria-label="close sidebar" className="drawer-overlay"></label>
                             <ul className="menu p-4 w-80 min-h-screen text-xl ">
                                 {/* Sidebar content here */}
