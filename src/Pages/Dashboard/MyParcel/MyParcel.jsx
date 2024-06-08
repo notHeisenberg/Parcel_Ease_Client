@@ -7,7 +7,18 @@ import { useForm } from "react-hook-form";
 import { MdCancelPresentation } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
 
 
 const MyParcel = () => {
@@ -17,10 +28,13 @@ const MyParcel = () => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [filter, setFilter] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDialogOpen, setDialogOpen] = useState(false);
 
     const { register, handleSubmit, watch, setValue } = useForm()
 
     const watchParcelWeight = watch('ParcelWeight', 0);
+
+
 
     useEffect(() => {
         const calculatePrice = (weight) => {
@@ -89,15 +103,30 @@ const MyParcel = () => {
     };
 
 
-    const handleCancel = async (id) => {
-        if (window.confirm('Are you sure you want to cancel this booking?')) {
-            try {
-                await axiosSecure.patch(`/bookings/cancel/${id}`);
-                refetch(); // Refetch the bookings after canceling
-            } catch (error) {
-                console.error('Error canceling booking:', error);
-            }
-        }
+    const handleCancel = async (item) => {
+        setSelectedItem(item);
+        setDialogOpen(true);
+    };
+
+    const handleDialogAction = () => {
+        setDialogOpen(false);
+        console.log(selectedItem)
+
+        axiosSecure.patch(`/bookings/cancel/${selectedItem._id}`)
+            .then(res => {
+                console.log(res.data)
+                if (res.data.modifiedCount > 0) {
+                    refetch()
+                    Swal.fire({
+                        position: 'top',
+                        icon: 'error',
+                        title: `Parcel Canceled successfully`,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            })
+
     };
 
     const handleReview = (id) => {
@@ -161,7 +190,7 @@ const MyParcel = () => {
                                         Update
                                     </button>
                                     <button
-                                        onClick={() => handleCancel(booking._id)}
+                                        onClick={() => handleCancel(booking)}
                                         disabled={booking.status !== 'pending' || booking.status === 'cancelled'}
                                         className="bg-red-500 text-white px-2 py-1 m-1 rounded disabled:opacity-50"
                                     >
@@ -308,6 +337,23 @@ const MyParcel = () => {
 
                 }
             </div>
+            <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
+                <AlertDialogTrigger asChild>
+                    <div />
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete your account and remove your data from our servers.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => setDialogOpen(false)}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDialogAction}>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
 
     );
