@@ -142,7 +142,7 @@ const MyParcel = () => {
 
     const totalPricePending = bookings
         .filter(booking => booking.status === 'pending')
-        .reduce((total, booking) => total + (booking.parcelPrice || 0), 0);
+        .reduce((total, booking) => total + (booking.parcelPrice * booking.parcelWeight || 0), 0);
 
     return (
         <div className="container mx-auto p-8">
@@ -193,7 +193,7 @@ const MyParcel = () => {
                                 <td>{booking.deliveryMenId || 'N/A'}</td>
                                 <td className={booking.status === 'pending' ?
                                     `badge-warning badge mt-6 font-semibold` :
-                                    booking.status === 'on the way' ? 'badge-info badge mt-6 font-semibold' : booking.status === 'delivered' ? 'badge-success' :
+                                    booking.status === 'on the way' ? 'badge-success badge mt-6 px-1 font-semibold' : booking.status === 'delivered' ? 'badge-success' :
                                         booking.status === 'returned' ? 'badge-secondary badge mt-6 font-semibold' :
                                             'badge-error badge mt-6 font-semibold'}>{booking.status}</td>
                                 <td>
@@ -219,13 +219,15 @@ const MyParcel = () => {
                                             Review
                                         </button>
                                     )}
-                                    <button
-                                        onClick={() => handlePay(booking)}
-                                        disabled={booking.status !== 'pending' || booking.status === 'cancelled'}
-                                        className="bg-yellow-500 text-white px-2 py-1 m-1 rounded"
-                                    >
-                                        Pay
-                                    </button>
+                                    {(booking.status !== 'cancelled' && booking.status !== 'returned') && (
+                                        <button
+                                            onClick={() => handlePay(booking)}
+                                            className="bg-yellow-500 text-white px-2 py-1 m-1 rounded hover:p-3 hover:border-sky-200 hover:btn"
+                                        >
+                                            Pay
+                                        </button>
+                                    )}
+
                                 </td>
                             </tr>
                         ))}

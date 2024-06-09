@@ -64,7 +64,7 @@ const BookParcel = () => {
             <div className="w-1/2">
                 <input
                     name='Name'
-                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-white focus:border-emerald-200 rounded-lg p-3 mt-2'
+                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-inherit focus:border-emerald-200 rounded-lg p-3 mt-2'
                     type="text"
                     placeholder="Name"
                     defaultValue={user.displayName}
@@ -73,7 +73,7 @@ const BookParcel = () => {
                 />
                 <input
                     name='Email'
-                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-white focus:border-emerald-200 rounded-lg p-3 mt-2'
+                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-inherit focus:border-emerald-200 rounded-lg p-3 mt-2'
                     type="email"
                     placeholder="Email"
                     defaultValue={user.email}
@@ -82,21 +82,21 @@ const BookParcel = () => {
                 />
                 <input
                     name='PhoneNumber'
-                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-white focus:border-emerald-200 rounded-lg p-3 mt-2'
+                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-inherit focus:border-emerald-200 rounded-lg p-3 mt-2'
                     type="tel"
                     placeholder="Your Phone Number"
                     {...register("PhoneNumber", { required: true })}
                 />
                 <input
                     name='ReceiversPhoneNumber'
-                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-white focus:border-emerald-200 rounded-lg p-3 mt-2'
+                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-inherit focus:border-emerald-200 rounded-lg p-3 mt-2'
                     type="tel"
                     placeholder="Receiver's Phone Number"
                     {...register("ReceiversPhoneNumber", { required: true })}
                 />
                 <input
                     name='ParcelType'
-                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-white focus:border-emerald-200 rounded-lg p-3 mt-2'
+                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-inherit focus:border-emerald-200 rounded-lg p-3 mt-2'
                     type="text"
                     placeholder="Parcel Type"
                     {...register("ParcelType", { required: true })}
@@ -104,7 +104,7 @@ const BookParcel = () => {
 
                 <input
                     name='ReceiversName'
-                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-white focus:border-emerald-200 rounded-lg p-3 mt-2'
+                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-inherit focus:border-emerald-200 rounded-lg p-3 mt-2'
                     type="text"
                     placeholder="Receiver's Name"
                     {...register("ReceiversName", { required: true })}
@@ -113,7 +113,7 @@ const BookParcel = () => {
             <div className="w-1/2">
                 <input
                     name='ParcelWeight'
-                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-white focus:border-emerald-200 rounded-lg p-3 mt-2'
+                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-inherit focus:border-emerald-200 rounded-lg p-3 mt-2'
                     type="number"
                     placeholder="Parcel Weight (kg)"
                     {...register("ParcelWeight", { required: true })}
@@ -121,7 +121,7 @@ const BookParcel = () => {
 
                 <input
                     name='DeliveryAddressLatitude'
-                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-white focus:border-emerald-200 rounded-lg p-3 mt-2'
+                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-inherit focus:border-emerald-200 rounded-lg p-3 mt-2'
                     type="number"
                     step="0.000000001"
                     placeholder="Delivery Address Latitude"
@@ -130,7 +130,7 @@ const BookParcel = () => {
                 {/*  */}
                 <input
                     name='Price'
-                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-white focus:border-emerald-200 rounded-lg p-3 mt-2'
+                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-inherit focus:border-emerald-200 rounded-lg p-3 mt-2'
                     type="number"
                     placeholder="Price"
                     readOnly
@@ -138,7 +138,7 @@ const BookParcel = () => {
                 />
                 <input
                     name='DeliveryAddressLongitude'
-                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-white focus:border-emerald-200 rounded-lg p-3 mt-2'
+                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-inherit focus:border-emerald-200 rounded-lg p-3 mt-2'
                     type="number"
                     step="0.000000001"
                     placeholder="Delivery Address Longitude"
@@ -147,13 +147,13 @@ const BookParcel = () => {
 
                 <input
                     name='RequestedDeliveryDate'
-                    className='h-20 w-full border-2 focus:border-4 text-white focus:border-emerald-200 rounded-lg p-3 mt-2'
+                    className='h-20 w-full border-2 focus:border-4 text-inherit focus:border-emerald-200 rounded-lg p-3 mt-2'
                     type="date"
                     {...register("RequestedDeliveryDate", { required: true })}
                 />
                 <textarea
                     name='ParcelDeliveryAddress'
-                    className='h-20 w-full border-2 focus:border-4 text-white focus:border-emerald-200 rounded-lg p-3 mt-2'
+                    className='h-20 w-full border-2 focus:border-4 text-inherit focus:border-emerald-200 rounded-lg p-3 mt-2'
                     placeholder="Parcel Delivery Address"
                     {...register("ParcelDeliveryAddress", { required: true })}
                 />

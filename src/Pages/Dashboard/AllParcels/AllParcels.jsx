@@ -2,6 +2,7 @@ import { AuthContext } from '@/components/Provider/AuthProvider';
 import useAxiosSecure from '@/utilities/useAxiosSecure';
 import { useQuery } from '@tanstack/react-query';
 import React, { useContext, useState } from 'react';
+import Swal from 'sweetalert2';
 
 const AllParcels = () => {
     const { user } = useContext(AuthContext)
@@ -45,9 +46,27 @@ const AllParcels = () => {
 
     const handleAssign = () => {
         // Update the booking in the database with selected delivery man and date
-        if (selectedBooking) {
+        if (selectedBooking && selectedDeliveryMan) {
             // Implement database update logic
             console.log(`Booking with ID ${selectedBooking._id} assigned to delivery man ${selectedDeliveryMan}`);
+            axiosSecure.patch(`/bookings/manage/${selectedBooking._id}`, {
+                status: 'on the way',
+                deliveryMenId: selectedDeliveryMan
+            })
+                .then(res => {
+                    refetch()
+                    setSelectedBooking(null)
+                    if (res.data.modifiedCount > 0) {
+                        refetch()
+                        Swal.fire({
+                            position: 'top',
+                            icon: 'success',
+                            title: `Parcel in One The Way `,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }
+                })
         }
     };
 
@@ -110,9 +129,19 @@ const AllParcels = () => {
                                 <td>{booking.bookingDate}</td>
                                 <td>{booking.requestedDeliveryDate}</td>
                                 <td className='text-blue-600'>${booking.parcelWeight * booking.parcelPrice}</td>
-                                <td>{booking.status}</td>
+                                <td className={booking.status === 'pending' ?
+                                    `badge-warning badge mt-6 font-semibold` :
+                                    booking.status === 'on the way' ? 'badge-info badge mt-6 font-semibold' : booking.status === 'delivered' ? 'badge-success' :
+                                        booking.status === 'returned' ? 'badge-secondary badge mt-6 font-semibold' :
+                                            'badge-error badge mt-6 font-semibold'}>{booking.status}</td>
                                 <td>
-                                    <button onClick={() => handleManage(booking)} className="bg-blue-500 text-white px-2 py-1 rounded">Manage</button>
+                                    <button
+                                        onClick={() => handleManage(booking)}
+                                        className={`bg-blue-500 text-white px-2 py-1 rounded btn btn-sm ${booking.status === 'pending' ? '' : booking.status === 'on the way' ? 'bg-green-500 cursor-progress' : ' disabled'}`}
+                                        disabled={booking.status === 'cancelled'}
+                                    >
+                                        {booking.status === 'pending' ? 'Manage' : booking.status === 'on the way' ? 'On The Way' : 'Canceled'}
+                                    </button>
                                 </td>
                             </tr>
                         ))}
@@ -121,29 +150,36 @@ const AllParcels = () => {
             </div>
 
             {/* Modal for managing bookings */}
-            {selectedBooking && (
-                <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white p-8 rounded shadow-lg">
-                        <h2 className="text-2xl mb-4">Manage Booking</h2>
-                        <div className="mb-4">
-                            <label>Select Deliveryman: </label>
-                            <select value={selectedDeliveryMan} onChange={(e) => setSelectedDeliveryMan(e.target.value)} className="border p-2">
-                                <option className='hidden' value="">Select Deliveryman</option>
-                                {deliveryMan.map(deliveryMan => (
-                                    <option key={deliveryMan._id} value={deliveryMan._id}>{deliveryMan.userName}</option>
-                                ))}
-                            </select>
+            {
+                selectedBooking && (
+                    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
+                        <div className="bg-white p-8 rounded shadow-lg">
+                            <h2 className="text-2xl mb-4">Manage Booking</h2>
+                            <div className="mb-4">
+                                <label>Select Deliveryman: </label>
+                                <select value={selectedDeliveryMan} onChange={(e) => setSelectedDeliveryMan(e.target.value)} className="border p-2">
+                                    <option className='hidden' value="">Select Deliveryman</option>
+                                    {deliveryMan.map(deliveryMan => (
+                                        <option key={deliveryMan._id} value={deliveryMan._id}>{deliveryMan.userName}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="mb-4">
+                                <label>Assign Approximate Delivery Date: </label>
+                                <input type="date" className="border p-2" />
+                            </div>
+                            <button onClick={handleAssign} className="bg-blue-500 text-white px-4 py-2 rounded">Assign</button>
+                            <button onClick={() => {
+                                setSelectedBooking(null)
+                                setSelectedDeliveryMan('')
+                            }
+                            }
+                                className="bg-gray-500 text-white px-4 py-2 rounded ml-4">Close</button>
                         </div>
-                        <div className="mb-4">
-                            <label>Assign Approximate Delivery Date: </label>
-                            <input type="date" className="border p-2" />
-                        </div>
-                        <button onClick={handleAssign} className="bg-blue-500 text-white px-4 py-2 rounded">Assign</button>
-                        <button onClick={() => setSelectedBooking(null)} className="bg-gray-500 text-white px-4 py-2 rounded ml-4">Close</button>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 };
 
