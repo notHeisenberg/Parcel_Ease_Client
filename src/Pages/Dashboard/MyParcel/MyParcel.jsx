@@ -17,30 +17,38 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 const MyParcel = () => {
-    const { user } = useContext(AuthContext)
-    const axiosSecure = useAxiosSecure()
+    const { user } = useContext(AuthContext);
+    const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
     const [selectedItem, setSelectedItem] = useState(null);
     const [filter, setFilter] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDialogOpen, setDialogOpen] = useState(false);
-    // const totalPrice = cart.reduce((total, item) => total + item.price, 0);
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
-    const { register, handleSubmit, watch, setValue } = useForm()
-
+    const { register, handleSubmit, watch, setValue, reset } = useForm();
     const watchParcelWeight = watch('ParcelWeight', 0);
-
-
 
     useEffect(() => {
         const calculatePrice = (weight) => {
-            if (weight == 1) return 50;
-            if (weight == 2) return 100;
+            if (weight === 1) return 50;
+            if (weight === 2) return 100;
             if (weight > 2) return 150;
             return 0;
         };
@@ -48,8 +56,6 @@ const MyParcel = () => {
     }, [watchParcelWeight, setValue]);
 
     const onSubmit = data => {
-        // console.log(data, selectedItem._id)
-
         const bookingInfo = {
             displayName: data.Name,
             email: data.Email,
@@ -64,45 +70,39 @@ const MyParcel = () => {
             parcelDeliveryAddress: data.ParcelDeliveryAddress,
             requestedDeliveryDate: data.RequestedDeliveryDate,
             bookingDate: new Date().toUTCString()
-        }
-        console.log(bookingInfo)
+        };
 
         axiosSecure.patch(`/bookings/update/${selectedItem._id}`, bookingInfo)
             .then(res => {
-                console.log(res.data)
                 if (res.data.modifiedCount > 0) {
-                    refetch()
+                    refetch();
                     Swal.fire({
                         position: 'top',
                         icon: 'success',
-                        title: `Parcel updated successfully`,
+                        title: 'Parcel updated successfully',
                         showConfirmButton: false,
                         timer: 1500
                     });
                 }
-            })
-
-    }
+            });
+    };
 
     const { data: bookings = [], refetch } = useQuery({
         queryKey: ['bookings', user.email],
         queryFn: async () => {
-            const res = await axiosSecure.get(`/bookings/${user.email}`)
+            const res = await axiosSecure.get(`/bookings/${user.email}`);
             return res.data;
         }
-    })
-
+    });
 
     const handleOpenModal = (item) => {
         setSelectedItem(item);
         setIsModalOpen(true);
     };
 
-
     const handleCloseModal = () => {
         setIsModalOpen(false);
     };
-
 
     const handleCancel = async (item) => {
         setSelectedItem(item);
@@ -111,32 +111,68 @@ const MyParcel = () => {
 
     const handleDialogAction = () => {
         setDialogOpen(false);
-        console.log(selectedItem)
 
         axiosSecure.patch(`/bookings/cancel/${selectedItem._id}`)
             .then(res => {
-                console.log(res.data)
                 if (res.data.modifiedCount > 0) {
-                    refetch()
+                    refetch();
                     Swal.fire({
                         position: 'top',
                         icon: 'error',
-                        title: `Parcel Canceled successfully`,
+                        title: 'Parcel Canceled successfully',
                         showConfirmButton: false,
                         timer: 1500
                     });
                 }
-            })
-
+            });
     };
 
-    const handleReview = (id) => {
-        navigate(`/review/${id}`);
+    const handleReview = (item) => {
+        setSelectedItem(item);
+        setIsReviewModalOpen(true);
+    };
+
+    const handleReviewSubmit = (data) => {
+        const reviewInfo = {
+            userName: user.displayName,
+            userImage: user.photoURL,
+            rating: data.Rating,
+            feedback: data.Feedback,
+            deliveryMenId: selectedItem.deliveryMenId,
+            parcelId: selectedItem._id
+        };
+
+        axiosSecure.post('/reviews', reviewInfo)
+            .then(res => {
+                if (res.data.insertedId) {
+                    setIsReviewModalOpen(false);
+                    Swal.fire({
+                        position: 'top',
+                        icon: 'success',
+                        title: 'Review submitted successfully',
+                        text: res.data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            }).catch(error => {
+                console.error('There was an error submitting the review:', error);
+                Swal.fire({
+                    position: 'top',
+                    icon: 'error',
+                    title: error.response.data.message,
+                    text: 'Error submitting review',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            });
+        reset()
     };
 
     const handlePay = (id) => {
         navigate(`/pay/${id}`);
     };
+
 
     const filteredBookings = filter ? bookings.filter(booking => booking.status === filter) : bookings;
 
@@ -161,7 +197,6 @@ const MyParcel = () => {
                         </select>
                     </div>
                 </div>
-                {/*  */}
                 <div>
                     <span className="text-3xl font-bold border-4 text-indigo-500 border-red-500 p-2 rounded-xl">
                         Total Pending: $ {totalPricePending}
@@ -191,11 +226,13 @@ const MyParcel = () => {
                                 <td>{booking.approximateDeliveryDate}</td>
                                 <td>{new Date(booking.bookingDate).toLocaleDateString()}</td>
                                 <td>{booking.deliveryMenId || 'N/A'}</td>
-                                <td className={booking.status === 'pending' ?
-                                    `badge-warning badge mt-6 font-semibold` :
-                                    booking.status === 'on the way' ? 'badge-success badge mt-6 px-1 font-semibold' : booking.status === 'delivered' ? 'badge-success' :
-                                        booking.status === 'returned' ? 'badge-secondary badge mt-6 font-semibold' :
-                                            'badge-error badge mt-6 font-semibold'}>{booking.status}</td>
+                                <td className={`badge ${booking.status === 'pending' ? 'badge-warning' :
+                                    booking.status === 'on the way' ? 'badge-accent' :
+                                        booking.status === 'delivered' ? 'badge-success' :
+                                            booking.status === 'returned' ? 'badge-secondary' :
+                                                'badge-error'} badge mt-6 font-semibold`}>
+                                    {booking.status}
+                                </td>
                                 <td>
                                     <button
                                         onClick={() => handleOpenModal(booking)}
@@ -227,152 +264,126 @@ const MyParcel = () => {
                                             Pay
                                         </button>
                                     )}
-
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
 
-                {isModalOpen && <>
-                    <div className="fixed top-12">
-                        <form onSubmit={handleSubmit(onSubmit)} className='relative container mx-auto  mt-5 border-4 border-sky-200 p-28 flex flex-col items-center justify-center' style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1531256379416-9f000e90aacc?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")', backgroundSize: 'cover', backgroundPosition: 'center' }} >
-                            <div onClick={handleCloseModal} className="btn btn-outline absolute right-0 top-0">
-                                <MdCancelPresentation className="text-4xl text-error " />
+                {isModalOpen && (
+                    <div className="modal">
+                        <form onSubmit={handleSubmit(onSubmit)} className="relative p-8 bg-white rounded shadow-lg space-y-4" style={{ backgroundImage: 'url("https://i.ibb.co/LCtBqGy/7846.jpg")', backgroundSize: 'cover', height: '100vh' }}>
+                            <button
+                                className="btn bg-red-400 font-bold text-2xl absolute right-4 top-4"
+                                type="button"
+                                onClick={handleCloseModal}
+                            >
+                                <MdCancelPresentation />
+                            </button>
+                            <div className="space-y-4">
+                                <div>
+                                    <Label htmlFor="Name">Name:</Label>
+                                    <Input id="Name" defaultValue={selectedItem?.displayName} {...register("Name")} className="border border-black p-2" />
+                                </div>
+                                <div>
+                                    <Label htmlFor="Email">Email:</Label>
+                                    <Input id="Email" defaultValue={selectedItem?.email} {...register("Email")} className="border border-black p-2" />
+                                </div>
+                                <div>
+                                    <Label htmlFor="PhoneNumber">Phone Number:</Label>
+                                    <Input id="PhoneNumber" defaultValue={selectedItem?.userPhoneNumber} {...register("PhoneNumber")} className="border border-black p-2" />
+                                </div>
+                                <div>
+                                    <Label htmlFor="ReceiversName">Receiver's Name:</Label>
+                                    <Input id="ReceiversName" defaultValue={selectedItem?.recieverName} {...register("ReceiversName")} className="border border-black p-2" />
+                                </div>
+                                <div>
+                                    <Label htmlFor="ReceiversPhoneNumber">Receiver's Phone Number:</Label>
+                                    <Input id="ReceiversPhoneNumber" defaultValue={selectedItem?.recieverPhoneNumber} {...register("ReceiversPhoneNumber")} className="border border-black p-2" />
+                                </div>
+                                <div>
+                                    <Label htmlFor="ParcelType">Parcel Type:</Label>
+                                    <Input id="ParcelType" defaultValue={selectedItem?.parcelType} {...register("ParcelType")} className="border border-black p-2" />
+                                </div>
+                                <div>
+                                    <Label htmlFor="ParcelWeight">Parcel Weight:</Label>
+                                    <Input id="ParcelWeight" defaultValue={selectedItem?.parcelWeight} type="number" {...register("ParcelWeight")} className="border border-black p-2" />
+                                </div>
+                                <div>
+                                    <Label htmlFor="Price">Price:</Label>
+                                    <Input id="Price" defaultValue={selectedItem?.parcelPrice} {...register("Price")} className="border border-black p-2" />
+                                </div>
+                                <div>
+                                    <Label htmlFor="DeliveryAddressLatitude">Delivery Address Latitude:</Label>
+                                    <Input id="DeliveryAddressLatitude" defaultValue={selectedItem?.deliveryAddressLatitude} {...register("DeliveryAddressLatitude")} className="border border-black p-2" />
+                                </div>
+                                <div>
+                                    <Label htmlFor="DeliveryAddressLongitude">Delivery Address Longitude:</Label>
+                                    <Input id="DeliveryAddressLongitude" defaultValue={selectedItem?.deliveryAddressLongitude} {...register("DeliveryAddressLongitude")} className="border border-black p-2" />
+                                </div>
+                                <div>
+                                    <Label htmlFor="ParcelDeliveryAddress">Parcel Delivery Address:</Label>
+                                    <Input id="ParcelDeliveryAddress" defaultValue={selectedItem?.parcelDeliveryAddress} {...register("ParcelDeliveryAddress")} className="border border-black p-2" />
+                                </div>
+                                <div>
+                                    <Label htmlFor="RequestedDeliveryDate">Requested Delivery Date:</Label>
+                                    <Input id="RequestedDeliveryDate" defaultValue={selectedItem?.requestedDeliveryDate} {...register("RequestedDeliveryDate")} className="border border-black p-2" />
+                                </div>
                             </div>
-                            <div className="w-1/2">
-                                <input
-                                    name='Name'
-                                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-black focus:border-emerald-200 rounded-lg p-3 mt-2'
-                                    type="text"
-                                    placeholder="Name"
-                                    defaultValue={user.displayName}
-                                    readOnly
-                                    {...register("Name")}
-                                />
-                                <input
-                                    name='Email'
-                                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-black focus:border-emerald-200 rounded-lg p-3 mt-2'
-                                    type="email"
-                                    placeholder="Email"
-                                    defaultValue={user.email}
-                                    readOnly
-                                    {...register("Email")}
-                                />
-                                <input
-                                    name='PhoneNumber'
-                                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-black focus:border-emerald-200 rounded-lg p-3 mt-2'
-                                    type="tel"
-                                    placeholder="Your Phone Number"
-                                    defaultValue={selectedItem.userPhoneNumber}
-                                    {...register("PhoneNumber", { required: true })}
-                                />
-                                <input
-                                    name='ReceiversPhoneNumber'
-                                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-black focus:border-emerald-200 rounded-lg p-3 mt-2'
-                                    type="tel"
-                                    placeholder="Receiver's Phone Number"
-                                    defaultValue={selectedItem.recieverPhoneNumber}
-                                    {...register("ReceiversPhoneNumber", { required: true })}
-                                />
-                                <input
-                                    name='ParcelType'
-                                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-black focus:border-emerald-200 rounded-lg p-3 mt-2'
-                                    type="text"
-                                    placeholder="Parcel Type"
-                                    defaultValue={selectedItem.parcelType}
-                                    {...register("ParcelType", { required: true })}
-                                />
-
-                                <input
-                                    name='ReceiversName'
-                                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-black focus:border-emerald-200 rounded-lg p-3 mt-2'
-                                    type="text"
-                                    placeholder="Receiver's Name"
-                                    defaultValue={selectedItem.recieverName}
-                                    {...register("ReceiversName", { required: true })}
-                                />
-                            </div>
-                            <div className="w-1/2">
-                                <input
-                                    name='ParcelWeight'
-                                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-black focus:border-emerald-200 rounded-lg p-3 mt-2'
-                                    type="number"
-                                    min={0}
-                                    placeholder="Parcel Weight (kg)"
-                                    defaultValue={selectedItem.parcelWeight}
-                                    {...register("ParcelWeight", { required: true })}
-                                />
-
-                                <input
-                                    name='DeliveryAddressLatitude'
-                                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-black focus:border-emerald-200 rounded-lg p-3 mt-2'
-                                    type="number"
-                                    step="0.000000001"
-                                    placeholder="Delivery Address Latitude"
-                                    defaultValue={selectedItem.deliveryAddressLatitude}
-                                    {...register("DeliveryAddressLatitude", { required: true })}
-                                />
-                                {/*  */}
-                                <input
-                                    name='Price'
-                                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-black focus:border-emerald-200 rounded-lg p-3 mt-2'
-                                    type="number"
-                                    placeholder="Price"
-                                    readOnly
-                                    {...register("Price")}
-                                />
-                                <input
-                                    name='DeliveryAddressLongitude'
-                                    className='h-20 lg:w-1/2 border-2 focus:border-4 text-black focus:border-emerald-200 rounded-lg p-3 mt-2'
-                                    type="number"
-                                    step="0.000000001"
-                                    placeholder="Delivery Address Longitude"
-                                    defaultValue={selectedItem.deliveryAddressLongitude}
-                                    {...register("DeliveryAddressLongitude", { required: true })}
-                                />
-
-                                <input
-                                    name='RequestedDeliveryDate'
-                                    className='h-20 w-full border-2 focus:border-4 text-blaCK focus:border-emerald-200 rounded-lg p-3 mt-2'
-                                    type="date"
-                                    defaultValue={selectedItem.requestedDeliveryDate}
-                                    {...register("RequestedDeliveryDate", { required: true })}
-                                />
-                                <textarea
-                                    name='ParcelDeliveryAddress'
-                                    className='h-20 w-full border-2 focus:border-4 text-blaCK focus:border-emerald-200 rounded-lg p-3 mt-2'
-                                    placeholder="Parcel Delivery Address"
-                                    defaultValue={selectedItem.parcelDeliveryAddress}
-                                    {...register("ParcelDeliveryAddress", { required: true })}
-                                />
-                            </div>
-                            <input className='h-20 lg:w-1/2 border-2 btn btn-ghost text-black bg-green-400 text-xl focus:border-4 focus:border-emerald-200 rounded-lg p-3 mt-2' type="submit" value="Update" />
+                            <Button type="submit">Submit</Button>
                         </form>
                     </div>
-                </>
+                )}
 
-                }
+                {isReviewModalOpen && (
+                    <Dialog open={isReviewModalOpen} onOpenChange={setIsReviewModalOpen}>
+                        <DialogContent>
+                            <form onSubmit={handleSubmit(handleReviewSubmit)} className="space-y-4">
+                                <DialogHeader>
+                                    <DialogTitle>Submit Review</DialogTitle>
+                                </DialogHeader>
+                                <div>
+                                    <Label htmlFor="userName">User's Name:</Label>
+                                    <Input id="userName" value={user.displayName} readOnly className="border border-black p-2" />
+                                </div>
+                                <div>
+                                    <Label htmlFor="userImage">User's Image:</Label>
+                                    <Input id="userImage" value={user.photoURL} readOnly className="border border-black p-2" />
+                                </div>
+                                <div>
+                                    <Label htmlFor="Rating">Rating:</Label>
+                                    <Input id="Rating" type="number" max="5" min="1" step="0.1" {...register("Rating", { required: true })} className="border border-warning p-2 text-warning font-bold" />
+                                </div>
+                                <div>
+                                    <Label htmlFor="Feedback">Feedback:</Label>
+                                    <Textarea id="Feedback" {...register("Feedback", { required: true })} className="border border-info p-2" />
+                                </div>
+                                <div>
+                                    <Label htmlFor="deliveryMenId">Delivery Men's ID:</Label>
+                                    <Input id="deliveryMenId" value={selectedItem?.deliveryMenId} readOnly className="border border-error p-2" />
+                                </div>
+                                <DialogFooter>
+                                    <Button type="submit">Submit</Button>
+                                </DialogFooter>
+                            </form>
+                        </DialogContent>
+                    </Dialog>
+                )}
+
+                <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you sure you want to cancel this parcel?</AlertDialogTitle>
+                            <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleDialogAction}>Yes, cancel it</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
-            <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogTrigger asChild>
-                    <div />
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete your account and remove your data from our servers.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel onClick={() => setDialogOpen(false)}>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDialogAction}>Continue</AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
         </div>
-
     );
 };
 
