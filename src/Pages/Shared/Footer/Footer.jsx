@@ -23,10 +23,10 @@ const Footer = () => {
 
     return (
         <footer
-            className=" w-full mt-10 bg-slate-200"
+            className=" w-full mt-10 bg-zinc-200 p-4"
         // style={{ backgroundImage: `url(${coolBackground})` }}
         >
-            <div className=" container mx-auto px-8 bg-slate-200">
+            <div className=" container mx-auto px-8 bg-zinc-200 p-4">
                 <div className=" grid grid-cols-1 justify-between gap-4 md:grid-cols-2">
                     <div className="hidden lg:flex flex-col items-start">
                         <FancyText
@@ -80,7 +80,7 @@ const Footer = () => {
                                 </svg>
                             </Typography>
                         </div>
-                        <div className="flex w-full flex-col items-center justify-center border-t border-blue-gray-50 py-4 md:flex-row md:justify-between">
+                        <div className="flex w-full flex-col items-center justify-center  border-blue-gray-50 py-4 md:flex-row md:justify-between">
                             <Typography
                                 variant="small"
                                 className="mb-4 text-center font-normal text-blue-gray-900 md:mb-0"
@@ -169,7 +169,7 @@ const Footer = () => {
                                 </svg>
                             </Typography>
                         </div>
-                        <div className=" flex w-full flex-col items-center justify-center border-t border-blue-gray-50 py-4 md:flex-row md:justify-between">
+                        <div className=" flex w-full flex-col items-center justify-center border-blue-gray-50 py-4 md:flex-row md:justify-between">
                             <Typography
                                 variant="small"
                                 className="mb-4 text-center font-normal text-blue-gray-900 md:mb-0"
