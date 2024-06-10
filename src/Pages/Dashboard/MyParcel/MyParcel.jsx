@@ -98,6 +98,7 @@ const MyParcel = () => {
     const handleOpenModal = (item) => {
         setSelectedItem(item);
         setIsModalOpen(true);
+        // console.log(isModalOpen)
     };
 
     const handleCloseModal = () => {
@@ -136,7 +137,7 @@ const MyParcel = () => {
         const reviewInfo = {
             userName: user.displayName,
             userImage: user.photoURL,
-            rating: data.Rating,
+            rating: parseFloat(data.Rating),
             feedback: data.Feedback,
             deliveryMenId: selectedItem.deliveryMenId,
             parcelId: selectedItem._id

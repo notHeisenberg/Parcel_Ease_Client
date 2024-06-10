@@ -25,7 +25,7 @@ const BookParcel = () => {
 
     // console.log(new Date().toUTCString())
     const onSubmit = data => {
-        console.log(data)
+        // console.log(data)
 
         const bookingInfo = {
             displayName: data.Name,
@@ -115,6 +115,7 @@ const BookParcel = () => {
                     name='ParcelWeight'
                     className='h-20 lg:w-1/2 border-2 focus:border-4 text-inherit focus:border-emerald-200 rounded-lg p-3 mt-2'
                     type="number"
+                    min={0}
                     placeholder="Parcel Weight (kg)"
                     {...register("ParcelWeight", { required: true })}
                 />

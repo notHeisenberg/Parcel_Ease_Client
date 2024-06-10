@@ -16,7 +16,7 @@ const MyDeliveryList = () => {
             return res.data;
         }
     });
-    // console.log(deliveries)
+    console.log(deliveries)
 
     const handleUpdateStatus = (id, status) => {
         Swal.fire({
@@ -74,7 +74,7 @@ const MyDeliveryList = () => {
                                 <td>{delivery.recieverName}</td>
                                 <td>{delivery.userPhoneNumber}</td>
                                 <td>{new Date(delivery.requestedDeliveryDate).toLocaleDateString()}</td>
-                                <td>{new Date(delivery.approxDeliveryDate).toLocaleDateString()}</td>
+                                <td>{new Date(delivery.approximateDeliveryDate).toLocaleDateString()}</td>
                                 <td>{delivery.recieverPhoneNumber}</td>
                                 <td>{delivery.parcelDeliveryAddress}</td>
                                 <td>

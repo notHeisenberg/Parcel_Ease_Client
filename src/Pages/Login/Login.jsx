@@ -55,7 +55,7 @@ const Login = () => {
         login(email, password)
             .then(result => {
                 toast.success("login succesfully")
-                console.log(result.user)
+                // console.log(result.user)
                 Swal.fire({
                     title: 'User Login Successful.',
                     showClass: {
