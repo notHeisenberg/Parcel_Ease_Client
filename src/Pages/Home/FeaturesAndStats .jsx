@@ -46,6 +46,7 @@ const FeaturesAndStats = () => {
                     <p className="text-center mt-2">Our app is easy to use, making your parcel booking experience seamless.</p>
                 </div>
             </div>
+            <hr className="max-w-4xl border-dashed border-sky-300 my-10 mx-auto" />
 
             <h2 className="text-center text-3xl font-bold mt-10 mb-6">App Usage Statistics</h2>
             <div className="flex justify-center space-x-4">

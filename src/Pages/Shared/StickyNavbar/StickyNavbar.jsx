@@ -12,6 +12,7 @@ import { Link, NavLink } from "react-router-dom";
 import { AuthContext } from "@/components/Provider/AuthProvider";
 import useDeliveryman from "@/hooks/useDeliveryman";
 import useAdmin from "@/hooks/useAdmin";
+import FancyText from '@carefully-coded/react-text-gradient';
 
 export function StickyNavbar() {
     const [openNav, setOpenNav] = React.useState(false);
@@ -97,14 +98,21 @@ export function StickyNavbar() {
     return (
         <Navbar className="mx-auto  px-4 py-2 lg:px-8 lg:py-4 text-black">
             <div className="container mx-auto flex items-center justify-between text-blue-gray-900">
-                <Typography
-                    as="a"
-                    href="/"
-                    className="mr-4 cursor-pointer py-1.5 font-medium flex items-center text-2xl"
+                <FancyText
+                    gradient={{ from: '#4A00FF', to: '#00D7C0', type: 'linear' }}
+                    animate
+                    animateDuration={500}
+                    className="text-2xl mr-4 h-20 p-5 lg:h-auto font-bold"
                 >
-                    <img className="w-14 h-14" src={websiteLogo} alt="" />
-                    Parcel Ease
-                </Typography>
+                    <Typography
+                        as="a"
+                        href="/"
+                        className="mr-4 cursor-pointer  py-1.5 font-bold flex items-center text-2xl "
+                    >
+                        <img className="w-14 h-14" src={websiteLogo} alt="" />
+                        Parcel Ease
+                    </Typography>
+                </FancyText>
                 <div className="hidden lg:block">{navList}</div>
                 {
                     user ? <></>
