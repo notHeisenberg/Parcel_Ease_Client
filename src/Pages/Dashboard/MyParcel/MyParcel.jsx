@@ -100,6 +100,7 @@ const MyParcel = () => {
         setIsModalOpen(true);
         // console.log(isModalOpen)
     };
+    console.log(isModalOpen)
 
     const handleCloseModal = () => {
         setIsModalOpen(false);

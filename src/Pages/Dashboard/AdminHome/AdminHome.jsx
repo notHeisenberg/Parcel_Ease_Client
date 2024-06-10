@@ -1,26 +1,37 @@
 import { AuthContext } from "@/components/Provider/AuthProvider";
+import axiosPublic from "@/utilities/useAxiosPublic";
 import useAxiosSecure from "@/utilities/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
+import Chart from 'react-apexcharts';
+import LineChart from "./LineChart";
+
 
 
 const AdminHome = () => {
     const { user } = useContext(AuthContext)
     const axiosSecure = useAxiosSecure()
 
-    const { data: bookings = [], refetch } = useQuery({
-        queryKey: ['bookings', user.email],
+    const { data: stats = [], refetch } = useQuery({
+        queryKey: ['stats', user.email],
         queryFn: async () => {
-            const res = await axiosSecure.get(`/bookings`)
+            const res = await axiosPublic.get(`/statistics`)
             return res.data;
         }
     })
-    // console.log(bookings)
+    // console.log(stats)
 
-    
+
     return (
         <div>
-            This is admin Home stastics page
+            <div>
+                {/* Render the line chart here */}
+                {stats?.lineChartData && <LineChart lineChartData={stats.lineChartData} />}
+            </div>
+            <div>
+                {/* Render other content */}
+                This is admin Home statistics page
+            </div>
         </div>
     );
 };

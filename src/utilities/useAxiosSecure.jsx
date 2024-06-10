@@ -4,7 +4,7 @@ import { useContext } from "react";
 import { AuthContext } from "@/components/Provider/AuthProvider";
 
 const axiosSecure = axios.create({
-    baseURL: 'http://localhost:5000' || 'https://parcel-ease-server.vercel.app'
+    baseURL: 'https://parcel-ease-server.vercel.app'
 })
 const useAxiosSecure = () => {
     const navigate = useNavigate();
