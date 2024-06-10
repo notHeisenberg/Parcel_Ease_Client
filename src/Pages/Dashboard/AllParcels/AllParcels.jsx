@@ -70,7 +70,7 @@ const AllParcels = () => {
                 })
         }
     };
-    console.log(selectedDate)
+    // console.log(selectedDate)
     const filteredBookings = filter ? bookings.filter(booking => booking.status === filter) : bookings;
 
     // Further filter bookings based on date range
