@@ -172,7 +172,7 @@ const MyParcel = () => {
     };
 
     const handlePay = (id) => {
-        navigate(`/pay/${id}`);
+        // navigate(`/pay/${id}`);
     };
 
 
